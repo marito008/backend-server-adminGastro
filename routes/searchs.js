@@ -44,7 +44,7 @@ app.get('/coleccion/:tabla/:search', (req, res)=> {
 // Busqueda General
 //===============================================
 app.get('/todo/:search', (req, res, next)=> {
-
+    debugger;
     var busqueda = req.params.search;
     var regex = new RegExp(busqueda, 'i');
 
@@ -64,7 +64,7 @@ app.get('/todo/:search', (req, res, next)=> {
 function searchHospitales(busqueda, regex) {
     return new Promise ((resolve, reject)=> {
         Hospital.find({nombre: regex})
-            .populate('usuario', 'nombre email')
+            .populate('usuario', 'nombre email img')
             .exec((err, hospitales)=>{
             if (err){
                 reject('Error al cargar hospitales. ', err);
@@ -77,24 +77,23 @@ function searchHospitales(busqueda, regex) {
 }
 
 function searchMedicos(busqueda, regex) {
-    return new Promise ((resolve, reject)=> {
-        Medico.find({nombre: regex})
-            .pupulate('usuario', 'nombre email')
-            .pupulate('hospital')
-            .exec((err, medicos)=>{
-                if (err){
-                    reject('Error al cargar hospitales. ', err);
-                } else {
-                    resolve(medicos);
-                }
-        }); 
+    return new Promise((resolve, reject) => {
+        Medico.find({ nombre: regex })
+            .populate('usuario', 'nombre email img')
+            .populate('hospital')
+            .exec((err, medicos) => {
 
+                if (err) {
+                    reject('Error al cargar medicos', err);
+                } else {
+                    resolve(medicos)
+                }
+            });
     });
 }
-
 function searchUsuarios(busqueda, regex) {
     return new Promise ((resolve, reject)=> {
-        Usuario.find({}, 'nombre email')
+        Usuario.find({}, 'nombre email role img')
             .or([{'nombre': regex}, {'email': regex}])
             .exec((err, usuarios)=>{
                 if (err){
