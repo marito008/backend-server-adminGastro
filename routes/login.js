@@ -15,6 +15,19 @@ var auth = new GoogleAuth;
 const GOOGLE_CLIENT_ID = require('../config/config').GOOGLE_CLIENT_ID;
 const GOOGLE_SECRET = require('../config/config').GOOGLE_SECRET;
 
+var mdAutenticacion = require('../middlewares/authentication');
+//==============================================
+// Autenticacion Normal
+//==============================================
+app.get('/updatetoken', mdAutenticacion.verificarToken, (req, res)=> {
+    var token = jwt.sign({usuario: req.usuario}, SEED, {expiresIn: 14400});
+
+    return res.status(200).json({
+        ok: true,
+        token: token
+    });
+});
+
 //==============================================
 // Autenticacion Normal
 //==============================================
@@ -184,26 +197,48 @@ app.post('/', (req, res)=> {
 
 function obtenerMenu (ROLE) {
 
-    var menu= [{
-        titulo: 'Principal',
-        icono: 'mdi mdi-gauge',
-        submenu: [
-            { titulo: 'Dashboard', url: '/dashboard' },
-            { titulo: 'ProgressBar', url: '/progress' },
-            { titulo: 'Graficas', url: '/graficas' },
-            { titulo: 'Promesas', url: '/promesas' },
-            { titulo: 'RxJs', url: '/rxjs' }
-        ]
-    },
-    {
-        titulo: 'Mantenimientos',
-        icono: 'mdi mdi-folder-lock-open',
-        submenu: [
-        // { titulo: 'Usuarios', url: '/usuarios' },
-        { titulo: 'Médicos', url: '/medicos' },
-        { titulo: 'Hospitales', url: '/hospitales' }
-        ]
-    }];
+    if(ROLE === 'USER_ROLE' || ROLE === 'ADMIN_ROLE') {
+        var menu= [{
+            titulo: 'Principal',
+            icono: 'mdi mdi-gauge',
+            submenu: [
+                { titulo: 'Dashboard', url: '/dashboard' },
+                { titulo: 'Pacientes', url: '/pacientes' },
+                { titulo: 'ProgressBar', url: '/progress' },
+                { titulo: 'Graficas', url: '/graficas' },
+                { titulo: 'Promesas', url: '/promesas' },
+                { titulo: 'RxJs', url: '/rxjs' }
+            ]
+        },
+        {
+            titulo: 'Mantenimientos',
+            icono: 'mdi mdi-folder-lock-open',
+            submenu: [
+            // { titulo: 'Usuarios', url: '/usuarios' },
+            { titulo: 'Médicos', url: '/medicos' },
+            { titulo: 'Hospitales', url: '/hospitales' }
+            ]
+        }];        
+    } else {
+        var menu= [{
+            titulo: 'Principal',
+            icono: 'mdi mdi-gauge',
+            submenu: [
+                { titulo: 'Dashboard', url: '/dashboard' },
+                { titulo: 'Pacientes', url: '/pacientes' },
+                { titulo: 'Consultas', url: '/progress' },
+                { titulo: 'RxJs', url: '/rxjs' }
+            ]
+        },
+        {
+            titulo: 'Mantenimientos',
+            icono: 'mdi mdi-folder-lock-open',
+            submenu: [
+                { titulo: 'Hospitales', url: '/hospitales' }
+            ]
+        }];
+    }
+
     if(ROLE === 'ADMIN_ROLE'){
         console.log('ROLE: ', ROLE);
         menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });

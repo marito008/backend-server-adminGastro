@@ -5,6 +5,7 @@ var app = express();
 var Hospital = require('../models/hospital');
 var Medico = require('../models/medico');
 var Usuario = require('../models/usuario');
+var Paciente = require('../models/paciente');
 
 //===============================================
 // Busqueda por coleccion
@@ -23,6 +24,9 @@ app.get('/coleccion/:tabla/:search', (req, res)=> {
             break;
         case 'medicos':
             promesa = searchMedicos(busqueda, regex);
+            break;
+        case 'pacientes':
+            promesa = searchPacientes(busqueda, regex);
             break;
         default:
             return  res.status(400).json({
@@ -44,19 +48,20 @@ app.get('/coleccion/:tabla/:search', (req, res)=> {
 // Busqueda General
 //===============================================
 app.get('/todo/:search', (req, res, next)=> {
-    debugger;
     var busqueda = req.params.search;
     var regex = new RegExp(busqueda, 'i');
 
     Promise.all( [searchHospitales(busqueda, regex), 
                   searchMedicos(busqueda, regex),
-                  searchUsuarios(busqueda, regex)])
+                  searchUsuarios(busqueda, regex),
+                  searchPacientes(busqueda, regex)])
     .then( result => {
         res.status(200).json({
             ok: true,
             hospitales: result[0],
             medicos: result[1],
-            usuarios: result[2]
+            usuarios: result[2],
+            pacientes: result[3]
         })
     });   
 });
@@ -107,4 +112,19 @@ function searchUsuarios(busqueda, regex) {
         }); 
 }
 
+function searchPacientes(busqueda, regex) {
+    return new Promise ((resolve, reject)=> {
+        Paciente.find({}, 'nombre apellido dni')
+            .or([{'nombre': regex}, {'apellido': regex}, {'dni': regex}])
+            .populate('obrasocial', 'nombre')
+            .exec((err, pacientes)=>{
+            if (err){
+                reject('Error al cargar pacientes. ', err);
+            } else {
+                resolve(pacientes);
+            }
+        }); 
+
+    });
+}
 module.exports = app;

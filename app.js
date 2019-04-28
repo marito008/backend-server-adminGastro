@@ -29,12 +29,21 @@ var medicoRoutes = require('./routes/medico');
 var searchRoutes = require('./routes/searchs');
 var uploadRoutes = require('./routes/upload');
 var imagenesRoutes = require('./routes/imagenes');
+var pacienteRoutes = require('./routes/paciente');
+var obraSocialRoutes = require('./routes/obrasocial');
+var estudioRoutes = require('./routes/estudio');
+
 
 //Conexion a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/adminGastroDB', (err, res)=>{
     if (err) throw err;
     console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 });
+
+// Server Index config
+// var serveIndex = require('serve-index');
+// app.use(express.static(__dirname + '/'))
+// app.use('/uploads', serveIndex(__dirname + '/uploads'));
 
 // Routes
 app.use('/usuario', usuarioRoutes);
@@ -43,7 +52,10 @@ app.use('/medico', medicoRoutes);
 app.use('/busqueda', searchRoutes);
 app.use('/login', loginRoutes);
 app.use('/upload', uploadRoutes);
-app.use('/imagenes', imagenesRoutes);
+app.use('/img', imagenesRoutes);
+app.use('/paciente', pacienteRoutes);
+app.use('/obrasocial', obraSocialRoutes);
+app.use('/estudio', estudioRoutes);
 app.use('/', appRoutes);
 
 // escuchar peticiones

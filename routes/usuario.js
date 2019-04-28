@@ -60,6 +60,7 @@ app.put('/:id', [mdAuthentication.verificarToken, mdAuthentication.verificarAdmi
             });
         }
         usuario.nombre = body.nombre;
+        usuario.apellido = body.apellido;
         usuario.email = body.email;
         usuario.role = body.role;
 
@@ -89,6 +90,7 @@ app.post('/', [mdAuthentication.verificarToken, mdAuthentication.verificarAdminR
 
     var usuario = new Usuario({
         nombre: body.nombre,
+        apellido: body.apellido,
         email: body.email,
         password: bcrypt.hashSync(body.password, 10),
         img: body.img,
